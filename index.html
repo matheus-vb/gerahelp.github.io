@@ -1,11 +1,67 @@
-<div id="contact">
-        <h2>Get in Touch</h2>
-        <div id="contact-form">
-                <form action="https://formspree.io/f/mknepkkz" method="POST">
-                <input type="hidden" name="_subject" value="Contact request from personal website" />
-                <input type="email" name="_replyto" placeholder="Your email" required>
-                <textarea name="message" placeholder="Type your message" required></textarea>
-                <button type="submit">Send</button>
-            </form>
-        </div>
-    </div>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Page</title>
+    <style>
+        #response-message {
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .failure {
+            color: red;
+        }
+    </style>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var messageElement = document.getElementById('response-message');
+
+            try {
+                const response = await fetch('http://localhost:3002/user/checkin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                })
+
+                if (!response.ok) { // if HTTP-status is 200-299
+                    // get the error message from the server, or 'Unknown error'
+                    var message = response.statusText || 'Unknown error';
+                    messageElement.textContent = 'Error: ' + message;
+                    messageElement.className = 'failure';
+                } else {
+                    // if successful, the response text (server's response) is returned
+                    messageElement.textContent = 'Your data was submitted successfully!';
+                    messageElement.className = 'success';
+                }
+            } catch (error) {
+                messageElement.textContent = 'Error: ' + error.toString();
+                messageElement.className = 'failure';
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <form onsubmit="handleSubmit(event)">
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br>
+        <input type="submit" value="Submit">
+    </form>
+    <p id="response-message"></p>
+</body>
+
+</html>
